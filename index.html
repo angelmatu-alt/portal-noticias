@@ -4,91 +4,126 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HN Noticias</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --red: #cc0000; --red-light: #e60000;
-    --white: #ffffff; --off-white: #f5f5f5;
-    --light-gray: #e8e8e8; --mid-gray: #999;
-    --dark-gray: #333; --black: #111111;
-    --font-display: 'Playfair Display', Georgia, serif;
-    --font-body: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --red: #cc0000; --red2: #e60000;
+    --black: #0d0d0d; --dark: #1a1a1a;
+    --gray1: #f2f2f2; --gray2: #e0e0e0; --gray3: #999; --gray4: #444;
+    --white: #fff;
+    --fd: 'Playfair Display', Georgia, serif;
+    --fb: 'Inter', Arial, sans-serif;
   }
-  body { font-family: var(--font-body); background: var(--off-white); color: var(--black); min-height: 100vh; }
+  body { font-family: var(--fb); background: var(--gray1); color: var(--black); }
 
-  .top-bar { background: var(--black); color: #aaa; font-size: 0.7rem; font-weight: 400; letter-spacing: 0.5px; padding: 5px 24px; display: flex; justify-content: space-between; align-items: center; }
-  .top-bar strong { color: var(--white); font-weight: 600; }
+  .top-bar { background: var(--black); color: #777; font-size: 0.67rem; padding: 5px 20px; display: flex; justify-content: space-between; }
+  .top-bar strong { color: #ccc; }
 
-  header { background: var(--black); padding: 0 24px; position: sticky; top: 0; z-index: 200; border-bottom: 4px solid var(--red); }
-  .header-main { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 10px; border-bottom: 1px solid #222; }
-
-  .logo { font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--white); letter-spacing: -1px; line-height: 1; }
-  .logo .red { color: var(--red); }
-  .logo-sub { font-family: var(--font-body); font-size: 0.62rem; font-weight: 300; color: #888; letter-spacing: 3px; text-transform: uppercase; margin-top: 3px; }
-
-  .update-btn { background: var(--red); border: none; color: var(--white); padding: 9px 20px; font-family: var(--font-body); font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
-  .update-btn:hover { background: var(--red-light); }
-  .update-btn:disabled { background: #555; cursor: not-allowed; }
+  header { background: var(--black); padding: 0 20px; position: sticky; top: 0; z-index: 200; border-bottom: 3px solid var(--red); box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+  .hdr { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 8px; border-bottom: 1px solid #1f1f1f; }
+  .logo { font-family: var(--fd); font-size: 1.9rem; font-weight: 900; color: #fff; letter-spacing: -1px; line-height: 1; }
+  .logo em { color: var(--red); font-style: normal; }
+  .logo-sub { font-size: 0.58rem; color: #555; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
+  .ubtn { background: var(--red); border: none; color: #fff; padding: 8px 18px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .ubtn:hover { background: var(--red2); }
+  .ubtn:disabled { background: #333; cursor: not-allowed; }
   .spin { display: inline-block; animation: spin 0.9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  nav { display: flex; overflow-x: auto; scrollbar-width: none; }
+  nav { display: flex; overflow-x: auto; scrollbar-width: none; gap: 0; }
   nav::-webkit-scrollbar { display: none; }
-  .tab { background: none; border: none; color: #888; font-family: var(--font-body); font-size: 0.72rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 10px 18px; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
-  .tab:hover { color: var(--white); }
-  .tab.active { color: var(--white); border-bottom-color: var(--red); }
+  .tab { background: none; border: none; color: #666; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 9px 16px; cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: #fff; background: #111; }
+  .tab.active { color: #fff; border-bottom-color: var(--red); }
 
-  .ticker { background: var(--red); padding: 7px 0; overflow: hidden; }
-  .ticker-wrap { display: flex; align-items: center; }
-  .ticker-label { background: var(--black); color: var(--white); font-family: var(--font-body); font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 3px 14px; white-space: nowrap; flex-shrink: 0; }
-  .ticker-inner { display: flex; animation: ticker 38s linear infinite; white-space: nowrap; overflow: hidden; }
-  .ticker-inner span { font-family: var(--font-body); font-size: 0.75rem; font-weight: 500; color: var(--white); padding: 0 32px; }
-  .ticker-inner span::before { content: "▸ "; opacity: 0.7; }
-  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+  .ticker { background: var(--red); overflow: hidden; padding: 6px 0; }
+  .twrap { display: flex; align-items: center; }
+  .tlabel { background: #000; color: #fff; font-size: 0.6rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 4px 14px; white-space: nowrap; flex-shrink: 0; }
+  .tscroll { overflow: hidden; flex: 1; }
+  .tinner { display: flex; animation: ticker 42s linear infinite; white-space: nowrap; }
+  .tinner span { font-size: 0.73rem; font-weight: 600; color: #fff; padding: 0 28px; }
+  .tinner span::before { content: "● "; opacity: 0.6; }
+  @keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
 
-  main { max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+  main { max-width: 1280px; margin: 0 auto; padding: 20px 16px 40px; }
   .section { display: none; }
   .section.active { display: block; }
 
-  .section-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; padding-bottom: 10px; border-bottom: 3px solid var(--black); }
-  .section-header h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; color: var(--black); }
-  .cat-pill { background: var(--red); color: var(--white); font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 3px 10px; border-radius: 2px; }
-  .last-update { font-size: 0.68rem; font-weight: 300; color: var(--mid-gray); margin-bottom: 20px; margin-top: 6px; }
+  .shdr { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 3px solid var(--black); margin-bottom: 6px; }
+  .shdr h2 { font-family: var(--fd); font-size: 1.25rem; font-weight: 900; }
+  .lpill { background: var(--red); color: #fff; font-size: 0.58rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; padding: 3px 9px; }
+  .lupdate { font-size: 0.65rem; color: var(--gray3); margin-bottom: 18px; }
 
-  .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--light-gray); margin-bottom: 40px; border: 1px solid var(--light-gray); }
-  .card { background: var(--white); padding: 20px; cursor: pointer; transition: background 0.15s; display: flex; flex-direction: column; gap: 10px; }
-  .card:hover { background: #fafafa; }
-  .card:hover .card-title { color: var(--red); }
-  .card-cat { font-size: 0.62rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--red); }
-  .card-emoji-row { font-size: 1.6rem; line-height: 1; }
-  .card-title { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; line-height: 1.35; color: var(--black); transition: color 0.15s; }
-  .card-desc { font-size: 0.78rem; font-weight: 300; line-height: 1.6; color: var(--dark-gray); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
-  .card-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--light-gray); font-size: 0.65rem; color: var(--mid-gray); }
-  .card-source { font-weight: 600; color: var(--dark-gray); text-transform: uppercase; letter-spacing: 0.5px; }
+  /* ── LAYOUT ── */
+  .layout { display: grid; gap: 3px; margin-bottom: 3px; }
+  .layout-hero { grid-template-columns: 3fr 2fr; grid-template-rows: auto; }
+  .layout-bottom { grid-template-columns: repeat(4, 1fr); }
 
-  .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; gap: 16px; background: var(--white); }
-  .loader { width: 36px; height: 36px; border: 3px solid var(--light-gray); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  .loading-state p { font-size: 0.8rem; font-weight: 300; color: var(--mid-gray); letter-spacing: 0.5px; }
+  /* ── CARD SHARED ── */
+  .card { background: var(--white); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: box-shadow 0.2s; }
+  .card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+  .card:hover .ctitle { color: var(--red); }
+  .card:hover .cimg { transform: scale(1.04); }
 
-  .empty-state { background: var(--white); text-align: center; padding: 80px 20px; border: 1px solid var(--light-gray); }
-  .empty-state .big-emoji { font-size: 2.5rem; margin-bottom: 16px; }
-  .empty-state p { font-size: 0.85rem; font-weight: 300; color: var(--mid-gray); margin-bottom: 20px; line-height: 1.6; }
-  .empty-state p strong { font-weight: 600; color: var(--black); }
-  .empty-state button { background: var(--red); border: none; color: var(--white); padding: 10px 28px; font-family: var(--font-body); font-size: 0.72rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+  .cimg-wrap { overflow: hidden; flex-shrink: 0; }
+  .cimg { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+  .cph { width: 100%; background: var(--dark); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-  .modal-overlay.open { display: flex; }
-  .modal { background: var(--white); max-width: 620px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 32px; position: relative; border-top: 5px solid var(--red); }
-  .modal-cat { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
-  .modal h2 { font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; line-height: 1.4; margin-bottom: 16px; }
-  .modal-divider { width: 40px; height: 3px; background: var(--red); margin-bottom: 16px; }
-  .modal p { font-size: 0.85rem; font-weight: 300; line-height: 1.8; color: var(--dark-gray); }
-  .modal-footer { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--light-gray); font-size: 0.68rem; color: var(--mid-gray); display: flex; justify-content: space-between; }
-  .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: 1px solid var(--light-gray); color: var(--dark-gray); width: 28px; height: 28px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+  .cbody { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+  .ccat { font-size: 0.6rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--red); margin-bottom: 7px; }
+  .ctitle { font-family: var(--fd); font-weight: 900; line-height: 1.25; color: var(--black); transition: color 0.2s; margin-bottom: 8px; }
+  .cdesc { font-size: 0.77rem; font-weight: 300; line-height: 1.65; color: var(--gray4); flex: 1; }
+  .cmeta { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: 1px solid var(--gray2); font-size: 0.62rem; color: var(--gray3); }
+  .csrc { font-weight: 700; color: var(--gray4); text-transform: uppercase; letter-spacing: 0.5px; }
+  .cmore { color: var(--red); font-weight: 700; font-size: 0.62rem; white-space: nowrap; }
 
-  @media (max-width: 800px) { .news-grid { grid-template-columns: repeat(2,1fr); } .logo { font-size: 1.5rem; } }
-  @media (max-width: 520px) { .news-grid { grid-template-columns: 1fr; } }
+  /* Hero */
+  .card-hero .cimg-wrap { height: 340px; }
+  .card-hero .cph { height: 340px; font-size: 4rem; }
+  .card-hero .ctitle { font-size: 1.75rem; }
+  .card-hero .cdesc { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+  /* Side stacked */
+  .side-stack { display: flex; flex-direction: column; gap: 3px; }
+  .card-side { flex-direction: row; height: calc(50% - 1.5px); min-height: 200px; }
+  .card-side .cimg-wrap { width: 160px; height: auto; flex-shrink: 0; }
+  .card-side .cph { width: 160px; font-size: 2rem; }
+  .card-side .cbody { padding: 14px; }
+  .card-side .ctitle { font-size: 0.95rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-side .cdesc { display: none; }
+
+  /* Small */
+  .card-small .cimg-wrap { height: 170px; }
+  .card-small .cph { height: 170px; font-size: 2.5rem; }
+  .card-small .ctitle { font-size: 0.9rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .card-small .cdesc { display: none; }
+
+  /* LOADING / EMPTY */
+  .loading-state { background: var(--white); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px; gap: 14px; }
+  .loader { width: 38px; height: 38px; border: 3px solid var(--gray2); border-top-color: var(--red); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .loading-state p { font-size: 0.78rem; color: var(--gray3); }
+  .empty-state { background: var(--white); text-align: center; padding: 80px 20px; }
+  .empty-state .be { font-size: 3rem; margin-bottom: 14px; }
+  .empty-state p { font-size: 0.85rem; color: var(--gray3); margin-bottom: 18px; line-height: 1.6; }
+  .empty-state p strong { color: var(--black); }
+  .empty-state button { background: var(--red); border: none; color: #fff; padding: 10px 26px; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+
+  @media(max-width:900px){
+    .layout-hero{grid-template-columns:1fr;}
+    .side-stack{flex-direction:row;}
+    .card-side{flex-direction:column;height:auto;}
+    .card-side .cimg-wrap{width:100%;height:160px;}
+    .card-side .cph{width:100%;height:160px;}
+    .card-side .cdesc{display:block;-webkit-line-clamp:2;}
+    .layout-bottom{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){
+    .layout-bottom{grid-template-columns:1fr;}
+    .side-stack{flex-direction:column;}
+    .logo{font-size:1.5rem;}
+    .card-hero .ctitle{font-size:1.3rem;}
+  }
 </style>
 </head>
 <body>
@@ -99,14 +134,13 @@
 </div>
 
 <header>
-  <div class="header-main">
+  <div class="hdr">
     <div>
-      <div class="logo">HN<span class="red">NOTICIAS</span></div>
+      <div class="logo">HN<em>NOTICIAS</em></div>
       <div class="logo-sub">Portal Informativo de Honduras</div>
     </div>
-    <button class="update-btn" id="updateBtn" onclick="loadCurrentSection()">
-      <span id="updateIcon">↻</span>
-      <span id="updateText">Actualizar</span>
+    <button class="ubtn" id="updateBtn" onclick="loadCurrentSection()">
+      <span id="uicon">↻</span><span id="utxt">Actualizar</span>
     </button>
   </div>
   <nav>
@@ -119,170 +153,121 @@
 </header>
 
 <div class="ticker">
-  <div class="ticker-wrap">
-    <div class="ticker-label">ÚLTIMA HORA</div>
-    <div style="overflow:hidden;flex:1;">
-      <div class="ticker-inner" id="ticker">
-        <span>Bienvenido a HN Noticias</span>
-        <span>Portal informativo de Honduras en tiempo real</span>
-        <span>Honduras · Mundo · Deportes · Farándula · Redes</span>
-        <span>Presioná Actualizar para cargar las noticias</span>
-        <span>Bienvenido a HN Noticias</span>
-        <span>Portal informativo de Honduras en tiempo real</span>
-        <span>Honduras · Mundo · Deportes · Farándula · Redes</span>
-        <span>Presioná Actualizar para cargar las noticias</span>
+  <div class="twrap">
+    <div class="tlabel">ÚLTIMA HORA</div>
+    <div class="tscroll">
+      <div class="tinner" id="ticker">
+        <span>Bienvenido a HN Noticias</span><span>Portal informativo de Honduras en tiempo real</span><span>Honduras · Mundo · Deportes · Farándula · Redes</span><span>Presioná Actualizar para cargar las noticias</span>
+        <span>Bienvenido a HN Noticias</span><span>Portal informativo de Honduras en tiempo real</span><span>Honduras · Mundo · Deportes · Farándula · Redes</span><span>Presioná Actualizar para cargar las noticias</span>
       </div>
     </div>
   </div>
 </div>
 
 <main>
-  <div id="sec-hn" class="section active">
-    <div class="empty-state"><div class="big-emoji">📰</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>las últimas noticias de Honduras</p><button onclick="loadCurrentSection()">Cargar ahora</button></div>
-  </div>
-  <div id="sec-world" class="section">
-    <div class="empty-state"><div class="big-emoji">🌐</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>noticias internacionales</p><button onclick="loadCurrentSection()">Cargar ahora</button></div>
-  </div>
-  <div id="sec-sports" class="section">
-    <div class="empty-state"><div class="big-emoji">🏆</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>noticias deportivas</p><button onclick="loadCurrentSection()">Cargar ahora</button></div>
-  </div>
-  <div id="sec-ent" class="section">
-    <div class="empty-state"><div class="big-emoji">⭐</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>noticias de farándula</p><button onclick="loadCurrentSection()">Cargar ahora</button></div>
-  </div>
-  <div id="sec-social" class="section">
-    <div class="empty-state"><div class="big-emoji">💬</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>lo más viral de redes</p><button onclick="loadCurrentSection()">Cargar ahora</button></div>
-  </div>
+  <div id="sec-hn" class="section active"><div class="empty-state"><div class="be">📰</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>las últimas noticias de Honduras</p><button onclick="loadCurrentSection()">Cargar ahora</button></div></div>
+  <div id="sec-world" class="section"><div class="empty-state"><div class="be">🌐</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>noticias internacionales</p><button onclick="loadCurrentSection()">Cargar ahora</button></div></div>
+  <div id="sec-sports" class="section"><div class="empty-state"><div class="be">🏆</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>noticias deportivas</p><button onclick="loadCurrentSection()">Cargar ahora</button></div></div>
+  <div id="sec-ent" class="section"><div class="empty-state"><div class="be">⭐</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>noticias de farándula</p><button onclick="loadCurrentSection()">Cargar ahora</button></div></div>
+  <div id="sec-social" class="section"><div class="empty-state"><div class="be">💬</div><p>Presioná <strong>ACTUALIZAR</strong> para cargar<br>lo más viral de redes</p><button onclick="loadCurrentSection()">Cargar ahora</button></div></div>
 </main>
-
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <div class="modal-cat" id="m-cat"></div>
-    <h2 id="m-title"></h2>
-    <div class="modal-divider"></div>
-    <p id="m-body"></p>
-    <div class="modal-footer">
-      <span id="m-source"></span>
-      <span id="m-time"></span>
-    </div>
-  </div>
-</div>
 
 <script>
 (function(){
-  const d = new Date();
-  const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  document.getElementById('live-date').textContent =
-    `${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]} de ${d.getFullYear()} · Tegucigalpa`;
+  const d=new Date(), days=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], months=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  document.getElementById('live-date').textContent=`${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]} · Tegucigalpa`;
 })();
 
-const CFG = {
-  hn:     { label:'Honduras',         emoji:'🇭🇳', cats:'Política,Economía,Seguridad,Sociedad,Salud,Educación',      topic:'las noticias más importantes y recientes de Honduras hoy: política, gobierno, economía, seguridad, sociedad' },
-  world:  { label:'Mundo',            emoji:'🌍', cats:'Geopolítica,Tecnología,Economía,Ciencia,Conflicto,Clima',   topic:'las noticias internacionales más importantes del día: geopolítica, conflictos, economía global, ciencia, tecnología' },
-  sports: { label:'Deportes',         emoji:'⚽', cats:'Fútbol,Basketball,Tenis,Fórmula 1,Liga Nacional,Selección', topic:'las noticias deportivas más importantes de hoy: fútbol mundial, Liga Nacional de Honduras, selección hondureña, NBA, tenis, F1' },
-  ent:    { label:'Farándula',        emoji:'🎬', cats:'Música,Cine,TV,Celebridades,Hollywood,Moda',                topic:'las noticias más recientes de farándula: celebridades, cine, música, televisión, chismes de famosos' },
-  social: { label:'Redes & Polémica', emoji:'🔥', cats:'Polémica,Viral,Influencer,Twitter/X,TikTok,Cancelado',      topic:'las tendencias y polémicas más virales hoy en X (Twitter), TikTok e Instagram: dramas de famosos, controversias de influencers, cancelaciones, memes trending' }
-};
+const CFG={hn:{label:'Honduras',emoji:'🇭🇳'},world:{label:'Mundo',emoji:'🌍'},sports:{label:'Deportes',emoji:'⚽'},ent:{label:'Farándula',emoji:'🎬'},social:{label:'Redes & Polémica',emoji:'🔥'}};
+let currentTab='hn';
 
-let currentTab = 'hn';
-
-function switchTab(tab, btn) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+function switchTab(tab,btn){
+  currentTab=tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+tab).classList.add('active');
 }
 
-function setLoading(on) {
-  document.getElementById('updateIcon').className = on ? 'spin' : '';
-  document.getElementById('updateIcon').textContent = '↻';
-  document.getElementById('updateText').textContent = on ? 'Cargando...' : 'Actualizar';
-  document.getElementById('updateBtn').disabled = on;
+function setLoading(on){
+  document.getElementById('uicon').className=on?'spin':'';
+  document.getElementById('uicon').textContent='↻';
+  document.getElementById('utxt').textContent=on?'Cargando...':'Actualizar';
+  document.getElementById('updateBtn').disabled=on;
 }
 
-function renderSection(tab, data) {
-  const c = CFG[tab];
-  const now = new Date().toLocaleTimeString('es-HN',{hour:'2-digit',minute:'2-digit'});
-  const sec = document.getElementById('sec-'+tab);
+function mkCard(item, cls) {
+  const href = item.url || '#';
+  const target = item.url ? 'target="_blank" rel="noopener"' : '';
+  const img = item.urlToImage
+    ? `<div class="cimg-wrap"><img class="cimg" src="${item.urlToImage}" alt="" loading="lazy" onerror="this.parentElement.outerHTML='<div class=cph style=height:100%>${item.emoji||'📰'}</div>'"></div>`
+    : `<div class="cph">${item.emoji||'📰'}</div>`;
 
-  if (data.ticker && data.ticker.length) {
-    const dbl = [...data.ticker, ...data.ticker];
-    document.getElementById('ticker').innerHTML = dbl.map(t=>`<span>${t}</span>`).join('');
+  return `
+    <a class="card ${cls}" href="${href}" ${target}>
+      ${img}
+      <div class="cbody">
+        <div class="ccat">${item.categoria||'Noticia'}</div>
+        <div class="ctitle">${item.titulo}</div>
+        ${cls!=='card-side'&&cls!=='card-small'?`<div class="cdesc">${item.descripcion}</div>`:''}
+        <div class="cmeta">
+          <span class="csrc">${item.fuente}</span>
+          <span>${item.tiempo}</span>
+        </div>
+      </div>
+    </a>`;
+}
+
+function renderSection(tab, data){
+  const c=CFG[tab];
+  const now=new Date().toLocaleTimeString('es-HN',{hour:'2-digit',minute:'2-digit'});
+  const sec=document.getElementById('sec-'+tab);
+  const items=data.headlines||[];
+
+  if(data.ticker?.length){
+    const dbl=[...data.ticker,...data.ticker];
+    document.getElementById('ticker').innerHTML=dbl.map(t=>`<span>${t}</span>`).join('');
   }
 
-  let html = `
-    <div class="section-header">
-      <h2>${c.emoji} ${c.label}</h2>
-      <span class="cat-pill">En vivo</span>
+  if(!items.length){sec.innerHTML=`<div class="empty-state"><div class="be">⚠️</div><p>No se encontraron noticias.</p><button onclick="loadCurrentSection()">Reintentar</button></div>`;return;}
+
+  const [hero,...rest]=items;
+  const sides=rest.slice(0,2);
+  const smalls=rest.slice(2,6);
+
+  let html=`
+    <div class="shdr"><h2>${c.emoji} ${c.label}</h2><span class="lpill">En vivo</span></div>
+    <div class="lupdate">Actualizado a las ${now} — ${new Date().toLocaleDateString('es-HN',{weekday:'long',day:'numeric',month:'long'})}</div>
+    <div class="layout layout-hero">
+      ${mkCard(hero,'card-hero')}
+      <div class="side-stack">
+        ${sides.map(i=>mkCard(i,'card-side')).join('')}
+      </div>
     </div>
-    <div class="last-update">Actualizado a las ${now} — ${new Date().toLocaleDateString('es-HN',{weekday:'long',day:'numeric',month:'long'})}</div>
-    <div class="news-grid">`;
+    <div class="layout layout-bottom">
+      ${smalls.map(i=>mkCard(i,'card-small')).join('')}
+    </div>`;
 
-  const fallback = ['📰','🗞️','⚡','🔴','💬','🌐'];
-  (data.headlines || []).forEach((item, i) => {
-    html += `
-      <div class="card" onclick='openModal(${JSON.stringify(item).replace(/"/g,"&quot;")})'>
-        <div class="card-cat">${item.categoria||'Noticia'}</div>
-        <div class="card-emoji-row">${item.emoji||fallback[i%fallback.length]}</div>
-        <div class="card-title">${item.titulo}</div>
-        <div class="card-desc">${item.descripcion}</div>
-        <div class="card-meta">
-          <span class="card-source">${item.fuente||'Redacción'}</span>
-          <span>${item.tiempo||'Reciente'}</span>
-        </div>
-      </div>`;
-  });
-
-  html += '</div>';
-  sec.innerHTML = html;
+  sec.innerHTML=html;
 }
 
-function openModal(item) {
-  document.getElementById('m-cat').textContent = item.categoria||'';
-  document.getElementById('m-title').textContent = item.titulo;
-  document.getElementById('m-body').textContent = item.descripcion;
-  document.getElementById('m-source').textContent = item.fuente||'Redacción';
-  document.getElementById('m-time').textContent = item.tiempo||'';
-  document.getElementById('modal').classList.add('open');
-}
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-
-async function loadCurrentSection() {
-  const tab = currentTab;
-  const c = CFG[tab];
-  const sec = document.getElementById('sec-'+tab);
+async function loadCurrentSection(){
+  const tab=currentTab, c=CFG[tab], sec=document.getElementById('sec-'+tab);
   setLoading(true);
-
-  sec.innerHTML = `
-    <div class="section-header"><h2>${c.emoji} ${c.label}</h2><span class="cat-pill">Cargando</span></div>
-    <div class="loading-state"><div class="loader"></div><p>Buscando noticias en tiempo real...</p></div>`;
-
-  try {
-    const res = await fetch('/api/noticias', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ section: tab })
-    });
-
-    if (!res.ok) throw new Error('Error del servidor');
-    const data = await res.json();
-    if (!data.headlines?.length) throw new Error('Sin noticias');
-    renderSection(tab, data);
-  } catch(e) {
-    sec.innerHTML = `
-      <div class="section-header"><h2>${c.emoji} ${c.label}</h2></div>
-      <div class="empty-state">
-        <div class="big-emoji">⚠️</div>
-        <p>No se pudieron cargar las noticias.<br><small style="color:#aaa;">${e.message}</small></p>
-        <button onclick="loadCurrentSection()">Reintentar</button>
-      </div>`;
+  sec.innerHTML=`<div class="shdr"><h2>${c.emoji} ${c.label}</h2><span class="lpill">Cargando</span></div><div class="loading-state"><div class="loader"></div><p>Buscando noticias...</p></div>`;
+  try{
+    const res=await fetch('/api/noticias',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({section:tab})});
+    if(!res.ok) throw new Error('Error del servidor');
+    const data=await res.json();
+    if(!data.headlines?.length) throw new Error('Sin noticias');
+    renderSection(tab,data);
+  }catch(e){
+    sec.innerHTML=`<div class="empty-state"><div class="be">⚠️</div><p>No se pudieron cargar las noticias.<br><small style="color:#bbb">${e.message}</small></p><button onclick="loadCurrentSection()">Reintentar</button></div>`;
   }
   setLoading(false);
 }
 
-window.addEventListener('load', () => setTimeout(loadCurrentSection, 500));
+window.addEventListener('load',()=>setTimeout(loadCurrentSection,500));
 </script>
 </body>
 </html>
