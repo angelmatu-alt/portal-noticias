@@ -263,7 +263,7 @@ async function loadCurrentSection() {
     const res = await fetch('/api/noticias', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic: c.topic, cats: c.cats })
+      body: JSON.stringify({ section: tab })
     });
 
     if (!res.ok) throw new Error('Error del servidor');
