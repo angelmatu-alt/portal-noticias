@@ -3,42 +3,50 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { topic, cats } = req.body;
-  if (!topic || !cats) {
-    return res.status(400).json({ error: 'Faltan parámetros' });
-  }
+  const { section } = req.body;
+  if (!section) return res.status(400).json({ error: 'Faltan parámetros' });
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const apiKey = process.env.NEWS_API_KEY;
 
-  const prompt = `Eres un periodista. Basándote en tu conocimiento, genera noticias recientes y realistas sobre: ${topic}.
-Responde ÚNICAMENTE con JSON puro, sin markdown, sin explicaciones:
-{"headlines":[{"titulo":"","fuente":"","descripcion":"","categoria":"","emoji":"","tiempo":""}],"ticker":["","","","",""]}
-- Exactamente 6 noticias. categoria: una de ${cats}. emoji relevante. tiempo: "hace X horas". descripcion: 2 oraciones.`;
+  const configs = {
+    hn:     { q: 'Honduras' },
+    world:  { q: 'internacional OR global OR geopolítica' },
+    sports: { q: 'fútbol OR deportes OR FIFA OR NBA' },
+    ent:    { q: 'farándula OR celebridades OR cine OR música' },
+    social: { q: 'viral OR polémica OR influencer OR redes sociales' }
+  };
+
+  const cfg = configs[section] || configs.world;
+  const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(cfg.q)}&language=es&sortBy=publishedAt&pageSize=6&apiKey=${apiKey}`;
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 1500 }
-      })
-    });
-
+    const response = await fetch(url);
     const data = await response.json();
 
-    if (!response.ok) {
-      return res.status(500).json({ error: 'Gemini error', status: response.status, detail: data });
+    if (data.status !== 'ok') {
+      return res.status(500).json({ error: data.message });
     }
 
-    const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const match = clean.match(/\{[\s\S]*\}/);
-    if (!match) return res.status(500).json({ error: 'Sin JSON', raw: raw.substring(0, 300) });
+    const articles = data.articles || [];
+    const emojiMap = { hn:'🇭🇳', world:'🌍', sports:'⚽', ent:'🎬', social:'🔥' };
+    const catMap   = { hn:'Honduras', world:'Internacional', sports:'Deportes', ent:'Farándula', social:'Viral' };
 
-    const parsed = JSON.parse(match[0]);
-    return res.status(200).json(parsed);
+    const headlines = articles.slice(0,6).map(a => {
+      const diff = Math.floor((Date.now() - new Date(a.publishedAt).getTime()) / 60000);
+      const tiempo = diff < 60 ? `hace ${diff} min` : `hace ${Math.floor(diff/60)} horas`;
+      return {
+        titulo: a.title?.split(' - ')[0] || 'Sin título',
+        fuente: a.source?.name || 'Redacción',
+        descripcion: a.description || 'Ver nota completa.',
+        categoria: catMap[section] || 'Noticia',
+        emoji: emojiMap[section] || '📰',
+        tiempo,
+        url: a.url || ''
+      };
+    });
+
+    const ticker = headlines.slice(0,5).map(h => h.titulo.substring(0,60));
+    return res.status(200).json({ headlines, ticker });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
